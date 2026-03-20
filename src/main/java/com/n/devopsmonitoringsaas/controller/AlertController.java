@@ -1,0 +1,36 @@
+package com.n.devopsmonitoringsaas.controller;
+
+import com.n.devopsmonitoringsaas.entity.Alert;
+import com.n.devopsmonitoringsaas.service.AlertService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/tenants/{tenantId}")
+@RequiredArgsConstructor
+public class AlertController {
+
+    private final AlertService alertService;
+
+    @GetMapping("/alerts")
+    public List<Alert> listAlerts(@PathVariable Long tenantId) {
+        return alertService.findByTenantId(tenantId);
+    }
+
+    @GetMapping("/alerts/{alertId}")
+    public Alert getAlert(@PathVariable Long tenantId, @PathVariable Long alertId) {
+        return alertService.findByIdAndTenantId(alertId, tenantId);
+    }
+
+    @PutMapping("/alerts/{alertId}/acknowledge")
+    public Alert acknowledgeAlert(@PathVariable Long tenantId, @PathVariable Long alertId) {
+        return alertService.acknowledge(alertId, tenantId);
+    }
+
+    @GetMapping("/services/{serviceId}/alerts")
+    public List<Alert> listServiceAlerts(@PathVariable Long tenantId, @PathVariable Long serviceId) {
+        return alertService.findByServiceIdAndTenantId(serviceId, tenantId);
+    }
+}
