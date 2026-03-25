@@ -10,7 +10,9 @@ import com.n.devopsmonitoringsaas.repository.PlanRepository;
 import com.n.devopsmonitoringsaas.repository.TenantRepository;
 import com.n.devopsmonitoringsaas.repository.UserRepository;
 import com.n.devopsmonitoringsaas.security.JwtUtil;
+import com.n.devopsmonitoringsaas.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,13 @@ public class AuthService {
 
     @Transactional
     public InviteResponse invite(Long tenantId, String email, UserRole role) {
+        UserRole inviterRole = SecurityUtils.currentUserRole()
+                .orElseThrow(() -> new AccessDeniedException("Authentication required"));
+
+        if (role == UserRole.OWNER && inviterRole != UserRole.OWNER) {
+            throw new AccessDeniedException("Only OWNER can invite a user with OWNER role");
+        }
+
         if (userRepository.existsByEmail(email)) {
             throw new InvalidCredentialsException("Email already registered");
         }

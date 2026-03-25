@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +33,7 @@ public class AuthController {
 
     @PostMapping("/invite")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("@tenantSecurity.sameTenant(#request.tenantId()) and hasAnyRole('OWNER','ADMIN')")
     public AuthService.InviteResponse invite(@Valid @RequestBody InviteRequest request) {
         return authService.invite(request.tenantId(), request.email(), request.role());
     }

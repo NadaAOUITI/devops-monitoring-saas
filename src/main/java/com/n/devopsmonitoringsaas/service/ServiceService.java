@@ -42,4 +42,22 @@ public class ServiceService {
     public List<Service> findByTenantId(Long tenantId) {
         return serviceRepository.findByTenantId(tenantId);
     }
+
+    @Transactional
+    public Service updateService(Long tenantId, Long serviceId, String name, String url, Integer pingIntervalSeconds) {
+        Service service = serviceRepository.findByIdAndTenantId(serviceId, tenantId)
+                .orElseThrow(() -> new IllegalArgumentException("Service not found: " + serviceId));
+
+        service.setName(name);
+        service.setUrl(url);
+        service.setPingIntervalSeconds(pingIntervalSeconds);
+        return serviceRepository.save(service);
+    }
+
+    @Transactional
+    public void deleteService(Long tenantId, Long serviceId) {
+        Service service = serviceRepository.findByIdAndTenantId(serviceId, tenantId)
+                .orElseThrow(() -> new IllegalArgumentException("Service not found: " + serviceId));
+        serviceRepository.delete(service);
+    }
 }

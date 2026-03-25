@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,11 +27,13 @@ public class PlanController {
 
     @PostMapping("/tenants/{tenantId}/plan")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasRole('OWNER')")
     public Tenant subscribeToPlan(@PathVariable Long tenantId, @Valid @RequestBody PlanSubscriptionRequest request) {
         return tenantService.subscribeToPlan(tenantId, request.planId());
     }
 
     @PutMapping("/tenants/{tenantId}/plan")
+    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasRole('OWNER')")
     public Tenant changePlan(@PathVariable Long tenantId, @Valid @RequestBody PlanSubscriptionRequest request) {
         return tenantService.subscribeToPlan(tenantId, request.planId());
     }

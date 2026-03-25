@@ -4,6 +4,7 @@ import com.n.devopsmonitoringsaas.entity.Ping;
 import com.n.devopsmonitoringsaas.service.PingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -17,6 +18,7 @@ public class PingController {
     private final PingService pingService;
 
     @GetMapping
+    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
     public List<Ping> listPings(
             @PathVariable Long tenantId,
             @PathVariable Long serviceId,

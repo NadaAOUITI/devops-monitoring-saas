@@ -8,6 +8,7 @@ import com.n.devopsmonitoringsaas.service.ServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ServiceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
     public Service registerService(
             @PathVariable Long tenantId,
             @Valid @RequestBody ServiceCreateRequest request) {
@@ -39,7 +41,25 @@ public class ServiceController {
     }
 
     @GetMapping
+    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
     public List<Service> listServices(@PathVariable Long tenantId) {
         return serviceService.findByTenantId(tenantId);
+    }
+
+    @PutMapping("/{serviceId}")
+    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    public Service updateService(
+            @PathVariable Long tenantId,
+            @PathVariable Long serviceId,
+            @Valid @RequestBody ServiceCreateRequest request) {
+        return serviceService.updateService(
+                tenantId, serviceId, request.name(), request.url(), request.pingIntervalSeconds());
+    }
+
+    @DeleteMapping("/{serviceId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    public void deleteService(@PathVariable Long tenantId, @PathVariable Long serviceId) {
+        serviceService.deleteService(tenantId, serviceId);
     }
 }

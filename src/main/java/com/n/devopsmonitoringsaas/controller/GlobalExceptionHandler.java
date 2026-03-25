@@ -6,6 +6,7 @@ import com.n.devopsmonitoringsaas.exception.OwnerOperationException;
 import com.n.devopsmonitoringsaas.exception.PlanLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -30,6 +31,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OwnerOperationException.class)
     public ResponseEntity<String> handleOwnerOperation(OwnerOperationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(AccessDeniedException e) {
+        String message = e.getMessage() != null ? e.getMessage() : "Access denied";
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface ServiceRepository extends JpaRepository<Service, Long> {
 
@@ -17,6 +18,8 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     boolean existsByTenantIdAndName(Long tenantId, String name);
 
     boolean existsByIdAndTenantId(Long id, Long tenantId);
+
+    Optional<Service> findByIdAndTenantId(Long id, Long tenantId);
 
     @Query(value = """
             SELECT s.id, s.name, s.url, s.max_latency_ms,
