@@ -5,6 +5,7 @@ import com.n.devopsmonitoringsaas.entity.Tenant;
 
 import java.util.List;
 import com.n.devopsmonitoringsaas.exception.PlanLimitExceededException;
+import com.n.devopsmonitoringsaas.metrics.MetricsService;
 import com.n.devopsmonitoringsaas.repository.ServiceRepository;
 import com.n.devopsmonitoringsaas.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class ServiceService {
 
     private final ServiceRepository serviceRepository;
     private final TenantRepository tenantRepository;
+    private final MetricsService metricsService;
 
     @Transactional
     public Service registerService(Service service) {
@@ -36,7 +38,9 @@ public class ServiceService {
         }
 
         service.setTenant(tenant);
-        return serviceRepository.save(service);
+        Service saved = serviceRepository.save(service);
+        metricsService.updateActiveServicesCount();
+        return saved;
     }
 
     public List<Service> findByTenantId(Long tenantId) {
@@ -59,5 +63,6 @@ public class ServiceService {
         Service service = serviceRepository.findByIdAndTenantId(serviceId, tenantId)
                 .orElseThrow(() -> new IllegalArgumentException("Service not found: " + serviceId));
         serviceRepository.delete(service);
+        metricsService.updateActiveServicesCount();
     }
 }

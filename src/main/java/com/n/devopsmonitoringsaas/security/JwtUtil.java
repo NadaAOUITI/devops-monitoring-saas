@@ -48,7 +48,7 @@ public class JwtUtil {
                     .getPayload();
 
             Long userId = Long.parseLong(claims.getSubject());
-            Long tenantId = claims.get("tenantId", Long.class);
+            Long tenantId = toLong(claims.get("tenantId"));
             String roleStr = claims.get("role", String.class);
             UserRole role = UserRole.valueOf(roleStr);
 
@@ -63,4 +63,17 @@ public class JwtUtil {
     }
 
     public record JwtClaims(Long userId, Long tenantId, UserRole role) {}
+
+    private static Long toLong(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Long l) {
+            return l;
+        }
+        if (value instanceof Number n) {
+            return n.longValue();
+        }
+        return Long.parseLong(value.toString());
+    }
 }

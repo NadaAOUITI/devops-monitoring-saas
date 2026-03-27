@@ -1,7 +1,7 @@
 package com.n.devopsmonitoringsaas.service;
 
 import com.n.devopsmonitoringsaas.entity.*;
-import com.n.devopsmonitoringsaas.repository.AlertRepository;
+import com.n.devopsmonitoringsaas.metrics.MetricsService;
 import com.n.devopsmonitoringsaas.repository.IncidentRepository;
 import com.n.devopsmonitoringsaas.repository.PingRepository;
 import com.n.devopsmonitoringsaas.repository.ServiceRepository;
@@ -24,7 +24,10 @@ public class PingService {
     private final PingRepository pingRepository;
     private final ServiceRepository serviceRepository;
     private final IncidentRepository incidentRepository;
-    private final AlertRepository alertRepository;
+    private final IncidentService incidentService;
+    private final AlertService alertService;
+    private final WebhookService webhookService;
+    private final MetricsService metricsService;
 
     @Transactional
     public Ping ping(Service service) {
@@ -48,6 +51,7 @@ public class PingService {
         }
 
         long latencyMs = System.currentTimeMillis() - startMs;
+        metricsService.recordPingLatency(latencyMs);
 
         Service managedService = serviceRepository.findById(service.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Service not found: " + service.getId()));
@@ -67,6 +71,7 @@ public class PingService {
             handleSuccessfulPing(managedService);
         }
 
+        metricsService.incrementPingsExecuted();
         return ping;
     }
 
@@ -95,7 +100,7 @@ public class PingService {
                     .openedAt(Instant.now())
                     .closedAt(null)
                     .build();
-            incident = incidentRepository.save(incident);
+            incident = incidentService.saveNewOpenIncident(incident);
             ping.setIncident(incident);
             pingRepository.save(ping);
 
@@ -105,7 +110,8 @@ public class PingService {
                     .message(buildIncidentAlertMessage(service, cause))
                     .sentAt(Instant.now())
                     .build();
-            alertRepository.save(alert);
+            Alert savedAlert = alertService.saveNewAlert(alert);
+            webhookService.sendAlert(savedAlert);
         }
     }
 

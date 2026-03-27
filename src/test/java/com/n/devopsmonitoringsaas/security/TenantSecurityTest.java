@@ -47,4 +47,45 @@ class TenantSecurityTest {
     void sameTenant_returnsFalse_whenNotAuthenticated() {
         assertThat(tenantSecurity.sameTenant(10L)).isFalse();
     }
+
+    @Test
+    @DisplayName("sameTenant returns false when tenantId path is null")
+    void sameTenant_returnsFalse_whenTenantIdNull() {
+        var auth = new UsernamePasswordAuthenticationToken(
+                1L, null, List.of(new SimpleGrantedAuthority("ROLE_OWNER")));
+        auth.setDetails(10L);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertThat(tenantSecurity.sameTenant(null)).isFalse();
+    }
+
+    @Test
+    @DisplayName("sameTenant returns false when auth details are not Long tenant id")
+    void sameTenant_returnsFalse_whenDetailsNotLong() {
+        var auth = new UsernamePasswordAuthenticationToken(
+                1L, null, List.of(new SimpleGrantedAuthority("ROLE_MEMBER")));
+        auth.setDetails("not-a-long");
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertThat(tenantSecurity.sameTenant(10L)).isFalse();
+    }
+
+    @Test
+    @DisplayName("sameTenant returns false when authentication is null")
+    void sameTenant_returnsFalse_whenAuthenticationNull() {
+        SecurityContextHolder.clearContext();
+        assertThat(tenantSecurity.sameTenant(10L)).isFalse();
+    }
+
+    @Test
+    @DisplayName("sameTenant returns false when authentication is not authenticated")
+    void sameTenant_returnsFalse_whenNotFullyAuthenticated() {
+        var auth = new UsernamePasswordAuthenticationToken(
+                1L, null, List.of(new SimpleGrantedAuthority("ROLE_MEMBER")));
+        auth.setAuthenticated(false);
+        auth.setDetails(10L);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertThat(tenantSecurity.sameTenant(10L)).isFalse();
+    }
 }

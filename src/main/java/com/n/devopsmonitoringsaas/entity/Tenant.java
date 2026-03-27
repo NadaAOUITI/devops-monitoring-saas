@@ -29,6 +29,9 @@ public class Tenant {
     @ToString.Exclude
     private Plan plan;
 
+    @Column(name = "webhook_url", length = 500)
+    private String webhookUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

@@ -16,9 +16,12 @@ public class TenantSecurity {
             return false;
         }
         Object details = auth.getDetails();
-        if (!(details instanceof Long jwtTenantId)) {
+        if (!(details instanceof Number jwtTenantNum)) {
             return false;
         }
-        return jwtTenantId.equals(tenantId);
+        if (tenantId == null) {
+            return false;
+        }
+        return jwtTenantNum.longValue() == tenantId.longValue();
     }
 }

@@ -1,6 +1,7 @@
 package com.n.devopsmonitoringsaas.service;
 
 import com.n.devopsmonitoringsaas.entity.Alert;
+import com.n.devopsmonitoringsaas.metrics.MetricsService;
 import com.n.devopsmonitoringsaas.repository.AlertRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.List;
 public class AlertService {
 
     private final AlertRepository alertRepository;
+    private final MetricsService metricsService;
 
     public List<Alert> findByTenantId(Long tenantId) {
         return alertRepository.findByPingServiceTenantIdOrderBySentAtDesc(tenantId);
@@ -32,5 +34,12 @@ public class AlertService {
         Alert alert = findByIdAndTenantId(id, tenantId);
         alert.setAcknowledgedAt(Instant.now());
         return alertRepository.save(alert);
+    }
+
+    @Transactional
+    public Alert saveNewAlert(Alert alert) {
+        Alert saved = alertRepository.save(alert);
+        metricsService.incrementAlertsSent();
+        return saved;
     }
 }

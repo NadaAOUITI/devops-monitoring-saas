@@ -1,8 +1,10 @@
 package com.n.devopsmonitoringsaas.service;
 
 import com.n.devopsmonitoringsaas.entity.Incident;
+import com.n.devopsmonitoringsaas.metrics.MetricsService;
 import com.n.devopsmonitoringsaas.repository.IncidentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,6 +13,7 @@ import java.util.List;
 public class IncidentService {
 
     private final IncidentRepository incidentRepository;
+    private final MetricsService metricsService;
 
     public List<Incident> findByTenantId(Long tenantId) {
         return incidentRepository.findByTenantIdOrderByOpenedAtDesc(tenantId);
@@ -24,5 +27,12 @@ public class IncidentService {
         return incidentRepository.findById(id)
                 .filter(i -> i.getTenantId().equals(tenantId))
                 .orElseThrow(() -> new IllegalArgumentException("Incident not found: " + id));
+    }
+
+    @Transactional
+    public Incident saveNewOpenIncident(Incident incident) {
+        Incident saved = incidentRepository.save(incident);
+        metricsService.incrementIncidentsOpened();
+        return saved;
     }
 }

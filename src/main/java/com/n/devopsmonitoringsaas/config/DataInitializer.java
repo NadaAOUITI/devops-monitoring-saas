@@ -32,14 +32,14 @@ public class DataInitializer {
                 .name("Pro")
                 .maxServices(20)
                 .minPingIntervalSeconds(60)
-                .allowedAlertChannels(List.of(AlertChannel.EMAIL))
+                .allowedAlertChannels(List.of(AlertChannel.EMAIL, AlertChannel.WEBHOOK))
                 .build());
 
         planRepository.save(Plan.builder()
                 .name("Enterprise")
                 .maxServices(100)
                 .minPingIntervalSeconds(10)
-                .allowedAlertChannels(List.of(AlertChannel.EMAIL))
+                .allowedAlertChannels(List.of(AlertChannel.EMAIL, AlertChannel.WEBHOOK))
                 .build());
     }
 }

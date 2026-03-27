@@ -35,4 +35,12 @@ public class TenantService {
         tenant.setPlan(plan);
         return tenantRepository.save(tenant);
     }
+
+    @Transactional
+    public Tenant updateWebhookUrl(Long tenantId, String webhookUrl) {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant not found: " + tenantId));
+        tenant.setWebhookUrl(webhookUrl);
+        return tenantRepository.save(tenant);
+    }
 }

@@ -4,6 +4,7 @@ import com.n.devopsmonitoringsaas.entity.Plan;
 import com.n.devopsmonitoringsaas.entity.Service;
 import com.n.devopsmonitoringsaas.entity.Tenant;
 import com.n.devopsmonitoringsaas.exception.PlanLimitExceededException;
+import com.n.devopsmonitoringsaas.metrics.MetricsService;
 import com.n.devopsmonitoringsaas.repository.ServiceRepository;
 import com.n.devopsmonitoringsaas.repository.TenantRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class ServiceServiceTest {
 
     @Mock
     private TenantRepository tenantRepository;
+
+    @Mock
+    private MetricsService metricsService;
 
     @InjectMocks
     private ServiceService serviceService;
