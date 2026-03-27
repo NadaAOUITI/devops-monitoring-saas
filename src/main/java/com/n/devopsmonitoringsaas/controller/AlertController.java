@@ -16,25 +16,25 @@ public class AlertController {
     private final AlertService alertService;
 
     @GetMapping("/alerts")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public List<Alert> listAlerts(@PathVariable Long tenantId) {
         return alertService.findByTenantId(tenantId);
     }
 
     @GetMapping("/alerts/{alertId}")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public Alert getAlert(@PathVariable Long tenantId, @PathVariable Long alertId) {
         return alertService.findByIdAndTenantId(alertId, tenantId);
     }
 
     @PutMapping("/alerts/{alertId}/acknowledge")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     public Alert acknowledgeAlert(@PathVariable Long tenantId, @PathVariable Long alertId) {
         return alertService.acknowledge(alertId, tenantId);
     }
 
     @GetMapping("/services/{serviceId}/alerts")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public List<Alert> listServiceAlerts(@PathVariable Long tenantId, @PathVariable Long serviceId) {
         return alertService.findByServiceIdAndTenantId(serviceId, tenantId);
     }

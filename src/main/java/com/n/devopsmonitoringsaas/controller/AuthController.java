@@ -33,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/invite")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("@tenantSecurity.sameTenant(#request.tenantId()) and hasAnyRole('OWNER','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     public AuthService.InviteResponse invite(@Valid @RequestBody InviteRequest request) {
         return authService.invite(request.tenantId(), request.email(), request.role());
     }

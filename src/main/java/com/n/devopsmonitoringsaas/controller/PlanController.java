@@ -27,13 +27,13 @@ public class PlanController {
 
     @PostMapping("/tenants/{tenantId}/plan")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public Tenant subscribeToPlan(@PathVariable Long tenantId, @Valid @RequestBody PlanSubscriptionRequest request) {
         return tenantService.subscribeToPlan(tenantId, request.planId());
     }
 
     @PutMapping("/tenants/{tenantId}/plan")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public Tenant changePlan(@PathVariable Long tenantId, @Valid @RequestBody PlanSubscriptionRequest request) {
         return tenantService.subscribeToPlan(tenantId, request.planId());
     }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component("tenantSecurity")
 public class TenantSecurity {
 
+    /** Used by tests and optional SpEL; tenant path matching is enforced by {@link TenantPathSecurityFilter}. */
     public boolean sameTenant(Long tenantId) {
         if (tenantId == null) {
             return false;
@@ -17,9 +18,6 @@ public class TenantSecurity {
         }
         Object details = auth.getDetails();
         if (!(details instanceof Number jwtTenantNum)) {
-            return false;
-        }
-        if (tenantId == null) {
             return false;
         }
         return jwtTenantNum.longValue() == tenantId.longValue();

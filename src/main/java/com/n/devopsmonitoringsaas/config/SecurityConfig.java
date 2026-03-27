@@ -1,6 +1,7 @@
 package com.n.devopsmonitoringsaas.config;
 
 import com.n.devopsmonitoringsaas.security.JwtAuthFilter;
+import com.n.devopsmonitoringsaas.security.TenantPathSecurityFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,12 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public TenantPathSecurityFilter tenantPathSecurityFilter() {
+        return new TenantPathSecurityFilter();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, TenantPathSecurityFilter tenantPathSecurityFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
@@ -34,7 +40,8 @@ public class SecurityConfig {
                                 "/auth/register", "/auth/login", "/auth/accept-invite").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/plans").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(tenantPathSecurityFilter, JwtAuthFilter.class);
 
         return http.build();
     }

@@ -20,20 +20,20 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public List<User> listUsers(@PathVariable Long tenantId) {
         return userService.findByTenantId(tenantId);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     public void deleteUser(@PathVariable Long tenantId, @PathVariable Long userId) {
         userService.deleteUser(tenantId, userId);
     }
 
     @PutMapping("/{userId}/role")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     public User updateRole(
             @PathVariable Long tenantId,
             @PathVariable Long userId,

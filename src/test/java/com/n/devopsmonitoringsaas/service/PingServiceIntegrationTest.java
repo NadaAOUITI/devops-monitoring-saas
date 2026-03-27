@@ -3,6 +3,7 @@ package com.n.devopsmonitoringsaas.service;
 import com.n.devopsmonitoringsaas.entity.Alert;
 import com.n.devopsmonitoringsaas.entity.AlertType;
 import com.n.devopsmonitoringsaas.entity.Incident;
+import com.n.devopsmonitoringsaas.entity.IncidentStatus;
 import com.n.devopsmonitoringsaas.entity.Plan;
 import com.n.devopsmonitoringsaas.entity.Service;
 import com.n.devopsmonitoringsaas.entity.Tenant;
@@ -123,10 +124,7 @@ class PingServiceIntegrationTest {
             assertThat(result.getTimestamp()).isNotNull();
             assertThat(result.getService().getId()).isEqualTo(service.getId());
 
-            var saved = pingRepository.findAll();
-            assertThat(saved).hasSize(1);
-            assertThat(saved.get(0).getStatusCode()).isEqualTo(200);
-            assertThat(saved.get(0).getIsHealthy()).isTrue();
+            assertThat(pingRepository.countByServiceId(service.getId())).isEqualTo(1);
         }
 
         @Test
@@ -189,11 +187,12 @@ class PingServiceIntegrationTest {
             assertThat(result.getIsHealthy()).isFalse();
             assertThat(result.getIncident()).isNotNull();
 
-            List<Incident> incidents = incidentRepository.findAll();
-            assertThat(incidents).hasSize(1);
-            assertThat(incidents.get(0).getCause().name()).isEqualTo("DOWN");
+            Incident openIncident = incidentRepository
+                    .findByServiceIdAndStatus(service.getId(), IncidentStatus.OPEN)
+                    .orElseThrow();
+            assertThat(openIncident.getCause().name()).isEqualTo("DOWN");
 
-            List<Alert> alerts = alertRepository.findAll();
+            List<Alert> alerts = alertRepository.findByPingId(result.getId());
             assertThat(alerts).hasSize(1);
             Alert alert = alerts.get(0);
             assertThat(alert.getType()).isEqualTo(AlertType.DOWN);

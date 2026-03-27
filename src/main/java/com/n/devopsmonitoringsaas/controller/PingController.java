@@ -18,7 +18,7 @@ public class PingController {
     private final PingService pingService;
 
     @GetMapping
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public List<Ping> listPings(
             @PathVariable Long tenantId,
             @PathVariable Long serviceId,

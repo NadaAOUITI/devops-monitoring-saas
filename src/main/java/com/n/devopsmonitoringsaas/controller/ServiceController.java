@@ -23,7 +23,7 @@ public class ServiceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     public Service registerService(
             @PathVariable Long tenantId,
             @Valid @RequestBody ServiceCreateRequest request) {
@@ -41,13 +41,13 @@ public class ServiceController {
     }
 
     @GetMapping
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public List<Service> listServices(@PathVariable Long tenantId) {
         return serviceService.findByTenantId(tenantId);
     }
 
     @PutMapping("/{serviceId}")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     public Service updateService(
             @PathVariable Long tenantId,
             @PathVariable Long serviceId,
@@ -58,7 +58,7 @@ public class ServiceController {
 
     @DeleteMapping("/{serviceId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     public void deleteService(@PathVariable Long tenantId, @PathVariable Long serviceId) {
         serviceService.deleteService(tenantId, serviceId);
     }

@@ -16,19 +16,19 @@ public class IncidentController {
     private final IncidentService incidentService;
 
     @GetMapping("/incidents")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public List<Incident> listIncidents(@PathVariable Long tenantId) {
         return incidentService.findByTenantId(tenantId);
     }
 
     @GetMapping("/incidents/{incidentId}")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public Incident getIncident(@PathVariable Long tenantId, @PathVariable Long incidentId) {
         return incidentService.findByIdAndTenantId(incidentId, tenantId);
     }
 
     @GetMapping("/services/{serviceId}/incidents")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public List<Incident> listServiceIncidents(@PathVariable Long tenantId, @PathVariable Long serviceId) {
         return incidentService.findByServiceIdAndTenantId(serviceId, tenantId);
     }

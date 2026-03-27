@@ -45,6 +45,7 @@ class TenantSecurityTest {
     @Test
     @DisplayName("sameTenant returns false when not authenticated")
     void sameTenant_returnsFalse_whenNotAuthenticated() {
+        SecurityContextHolder.clearContext();
         assertThat(tenantSecurity.sameTenant(10L)).isFalse();
     }
 

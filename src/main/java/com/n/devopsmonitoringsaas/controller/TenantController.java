@@ -17,14 +17,14 @@ public class TenantController {
     private final TenantService tenantService;
 
     @GetMapping("/{tenantId}")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasAnyRole('OWNER','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_MEMBER')")
     public Tenant getTenant(@PathVariable Long tenantId) {
         return tenantRepository.findById(tenantId)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found: " + tenantId));
     }
 
     @PutMapping("/{tenantId}/webhook")
-    @PreAuthorize("@tenantSecurity.sameTenant(#tenantId) and hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public Tenant updateWebhook(
             @PathVariable Long tenantId,
             @RequestBody WebhookUpdateRequest request) {

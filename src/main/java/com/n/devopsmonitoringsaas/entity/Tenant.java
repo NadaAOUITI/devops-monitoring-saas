@@ -1,5 +1,6 @@
 package com.n.devopsmonitoringsaas.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"users", "services", "plan"})
 public class Tenant {
 
     @Id

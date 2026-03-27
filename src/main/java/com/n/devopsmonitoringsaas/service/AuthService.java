@@ -13,6 +13,7 @@ import com.n.devopsmonitoringsaas.security.JwtUtil;
 import com.n.devopsmonitoringsaas.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +82,13 @@ public class AuthService {
     public InviteResponse invite(Long tenantId, String email, UserRole role) {
         UserRole inviterRole = SecurityUtils.currentUserRole()
                 .orElseThrow(() -> new AccessDeniedException("Authentication required"));
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getDetails() instanceof Number jwtTenant) {
+            if (jwtTenant.longValue() != tenantId) {
+                throw new AccessDeniedException("Tenant mismatch");
+            }
+        }
 
         if (role == UserRole.OWNER && inviterRole != UserRole.OWNER) {
             throw new AccessDeniedException("Only OWNER can invite a user with OWNER role");
